@@ -21,6 +21,27 @@ class SkipFrame(gym.Wrapper):
         return obs, total_reward, done, info
 
 
+class GrayScaleObservation(gym.ObservationWrapper):
+    def __init__(self, env):
+        super().__init__(env)
+        obs_shape = self.observation_space.shape[:2]
+        self.observation_space = gym.spaces.Box(low=0, high=255, shape=obs_shape, dtype=np.uint8)
+
+    def permute_orientation(self, observation):
+        # permute [H, W, C] array to [C, H, W] tensor
+        # observation = np.transpose(observation, (2, 0, 1))
+        observation = torch.tensor(observation.copy(), dtype=torch.float)
+        return observation
+
+    def transform(self, obs):
+        return np.dot(obs[...,:3], [0.2989, 0.5870, 0.1140])
+
+    def observation(self, observation):
+        observation = self.permute_orientation(observation)
+        observation = self.transform(observation)
+        return observation
+
+
 class DeepQNetwork(nn.Module):
     def __init__(self):
         super().__init__()
@@ -67,7 +88,7 @@ class Agent(object):
         self.env = JoypadSpace(self.env, [['right'], ['right', 'A']])
         self.env = SkipFrame(self.env, 4)
         self.env = gym.wrappers.ResizeObservation(self.env, (84, 84))
-        self.env = gym.wrappers.GrayScaleObservation(self.env)
+        self.env = GrayScaleObservation(self.env)
         self.env = gym.wrappers.FrameStack(self.env, num_stack=4)
         self.obs = None
     
@@ -102,13 +123,6 @@ class Agent(object):
             action = self.model(torch.Tensor(np.array(obs)).unsqueeze(0))
             action = torch.argmax(action[0])
         return action.item() + 1
-
-    # def GrayScaleObservation(self, obs):
-    #     import cv2
-    #     observation = cv2.cvtColor(observation, cv2.COLOR_RGB2GRAY)
-    #     if self.keep_dim:
-    #         observation = np.expand_dims(observation, -1)
-    #     return observation
     
 
 
