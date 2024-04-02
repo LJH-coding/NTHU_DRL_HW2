@@ -39,7 +39,7 @@ for episode in tqdm(range(episodes), desc="Evaluating"):
         
         obs, reward, done, info = env.step(action)
         episode_reward += reward
-        env.render()
+        # env.render()
 
         if time.time() - start_time > time_limit:
             print(f"Time limit reached for episode {episode}")

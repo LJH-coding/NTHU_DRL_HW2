@@ -69,7 +69,7 @@ class Agent(object):
         self.frames = deque(maxlen=4)
 
     def act(self, obs):
-        if self.timesteps == 10277:
+        if self.timesteps == 3993:
             self.reset()
         if self.frame_skipping % 4 == 0:
             obs = ResizeObservation(obs)
