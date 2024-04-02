@@ -28,13 +28,16 @@ for episode in tqdm(range(episodes), desc="Evaluating"):
     obs = env.reset()
     start_time = time.time()
     episode_reward = 0
+    timesteps = 0
     
     while True:
-        action = agent.act(obs)
-        
+        timesteps += 1
         start = time.time()
-        obs, reward, done, info = env.step(action)
+        action = agent.act(obs)
         end = time.time()
+        assert end - start <= 2
+        
+        obs, reward, done, info = env.step(action)
         episode_reward += reward
         env.render()
 
@@ -48,6 +51,7 @@ for episode in tqdm(range(episodes), desc="Evaluating"):
     end_time = time.time()
     total_reward += episode_reward
     total_time += (end_time - start_time)
+    # print(timesteps)
 
 env.close()
 
