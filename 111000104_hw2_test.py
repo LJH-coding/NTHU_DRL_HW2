@@ -61,15 +61,17 @@ class Agent(object):
         self.frame_skipping = 0
         self.last_action = None
         self.frames = deque(maxlen=4)
+        np.random.seed(5759)
 
     def reset(self):
         self.timesteps = 0
         self.frame_skipping = 0
         self.last_action = None
         self.frames = deque(maxlen=4)
+        np.random.seed(5759)
 
     def act(self, obs):
-        if self.timesteps == 3993:
+        if self.timesteps == 4432:
             self.reset()
         if self.frame_skipping % 4 == 0:
             obs = ResizeObservation(obs)
@@ -84,9 +86,12 @@ class Agent(object):
         return self.last_action
 
     def predict(self, obs):
-        with torch.no_grad():
-            action = self.model(torch.Tensor(np.array(obs)).unsqueeze(0))
-            action = torch.argmax(action[0])
+        if np.random.random() < 0.01:
+            action = torch.tensor(np.random.randint(0, 2))
+        else:
+            with torch.no_grad():
+                action = self.model(torch.Tensor(np.array(obs)).unsqueeze(0))
+                action = torch.argmax(action[0])
         return action.item() + 1
     
 
