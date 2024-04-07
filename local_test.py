@@ -25,7 +25,7 @@ agent = Agent()
 total_reward = 0
 total_time = 0
 time_limit = 120
-episodes = 2
+episodes = 3
 
 
 for episode in tqdm(range(episodes), desc="Evaluating"):
@@ -43,7 +43,7 @@ for episode in tqdm(range(episodes), desc="Evaluating"):
         
         obs, reward, done, info = env.step(action)
         episode_reward += reward
-        # env.render()
+        env.render()
 
         if time.time() - start_time > time_limit:
             print(f"Time limit reached for episode {episode}")
@@ -55,7 +55,7 @@ for episode in tqdm(range(episodes), desc="Evaluating"):
     end_time = time.time()
     total_reward += episode_reward
     total_time += (end_time - start_time)
-    # print(timesteps)
+    print(timesteps)
 
 env.close()
 
