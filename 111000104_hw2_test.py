@@ -1,5 +1,6 @@
 import torch.nn as nn
 import torch
+import torch.nn.functional as F
 import numpy as np
 import gym
 from collections import deque
@@ -18,6 +19,21 @@ def ResizeObservation(obs):
         obs = np.expand_dims(obs, -1)
     return obs
 
+class NoisyLinear(nn.Module):
+
+    def __init__(self, in_features: int, out_features: int, std_init: float = 0.5):
+        super(NoisyLinear, self).__init__()
+
+        self.in_features = in_features
+        self.out_features = out_features
+
+        self.weight_mu = nn.Parameter(torch.Tensor(out_features, in_features))
+        self.bias_mu = nn.Parameter(torch.Tensor(out_features))
+
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+
+        return F.linear(x, self.weight_mu, self.bias_mu)
+
 class DeepQNetwork(nn.Module):
     def __init__(self):
         super().__init__()
@@ -34,15 +50,15 @@ class DeepQNetwork(nn.Module):
         )
 
         self.advantage_head = nn.Sequential(
-            nn.Linear(2304, 512),
+            NoisyLinear(2304, 512),
             nn.ReLU(),
-            nn.Linear(512, 2)
+            NoisyLinear(512, 7)
         )
 
         self.value_head = nn.Sequential(
-            nn.Linear(2304, 512),
+            NoisyLinear(2304, 512),
             nn.ReLU(),
-            nn.Linear(512, 1)
+            NoisyLinear(512, 1)
         )
 
     def forward(self, x):
@@ -61,17 +77,17 @@ class Agent(object):
         self.frame_skipping = 0
         self.last_action = None
         self.frames = deque(maxlen=4)
-        np.random.seed(5759)
+        np.random.seed(98207403)
 
     def reset(self):
         self.timesteps = 0
         self.frame_skipping = 0
         self.last_action = None
         self.frames = deque(maxlen=4)
-        np.random.seed(5759)
+        np.random.seed(98207403)
 
     def act(self, obs):
-        if self.timesteps == 4432:
+        if self.timesteps == 4327:
             self.reset()
         if self.frame_skipping % 4 == 0:
             obs = ResizeObservation(obs)
@@ -87,12 +103,12 @@ class Agent(object):
 
     def predict(self, obs):
         if np.random.random() < 0.01:
-            action = torch.tensor(np.random.randint(0, 2))
+            action = torch.tensor(np.random.randint(7))
         else:
             with torch.no_grad():
                 action = self.model(torch.Tensor(np.array(obs)).unsqueeze(0))
                 action = torch.argmax(action[0])
-        return action.item() + 1
+        return action.item()
     
 
 

@@ -1,11 +1,15 @@
 from nes_py.wrappers import JoypadSpace
 import gym_super_mario_bros
-from gym_super_mario_bros.actions import COMPLEX_MOVEMENT
+from gym_super_mario_bros.actions import COMPLEX_MOVEMENT, SIMPLE_MOVEMENT
 import importlib
 import sys
 from tqdm import tqdm
 import numpy as np
 import time
+
+print(SIMPLE_MOVEMENT)
+print(COMPLEX_MOVEMENT)
+
 env = gym_super_mario_bros.make('SuperMarioBros-v0')
 env = JoypadSpace(env, COMPLEX_MOVEMENT)
 
@@ -21,7 +25,7 @@ agent = Agent()
 total_reward = 0
 total_time = 0
 time_limit = 120
-episodes = 3
+episodes = 2
 
 
 for episode in tqdm(range(episodes), desc="Evaluating"):
