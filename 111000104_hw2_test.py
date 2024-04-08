@@ -77,17 +77,17 @@ class Agent(object):
         self.frame_skipping = 0
         self.last_action = None
         self.frames = deque(maxlen=4)
-        np.random.seed(2000)
+        np.random.seed(3350)
 
     def reset(self):
         self.timesteps = 0
         self.frame_skipping = 0
         self.last_action = None
         self.frames = deque(maxlen=4)
-        np.random.seed(2000)
+        np.random.seed(3350)
 
     def act(self, obs):
-        if self.timesteps == 3627:
+        if self.timesteps == 3573:
             self.reset()
         if self.frame_skipping % 4 == 0:
             obs = ResizeObservation(obs)
