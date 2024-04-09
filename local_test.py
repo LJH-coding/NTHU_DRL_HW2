@@ -55,7 +55,7 @@ for episode in tqdm(range(episodes), desc="Evaluating"):
     end_time = time.time()
     total_reward += episode_reward
     total_time += (end_time - start_time)
-    print(timesteps)
+    print(timesteps, episode_reward)
 
 env.close()
 

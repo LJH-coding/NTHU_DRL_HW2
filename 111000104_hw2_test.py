@@ -77,24 +77,24 @@ class Agent(object):
         self.frame_skipping = 0
         self.last_action = None
         self.frames = deque(maxlen=4)
-        np.random.seed(3350)
+        # np.random.seed(3350)
 
     def reset(self):
         self.timesteps = 0
         self.frame_skipping = 0
         self.last_action = None
         self.frames = deque(maxlen=4)
-        np.random.seed(3350)
+        # np.random.seed(3350)
 
-    def act(self, obs):
-        if self.timesteps == 3573:
+    def act(self, observation):
+        if self.timesteps == 3762:
             self.reset()
         if self.frame_skipping % 4 == 0:
-            obs = ResizeObservation(obs)
-            obs = GrayScaleObservation(obs)
+            observation = ResizeObservation(observation)
+            observation = GrayScaleObservation(observation)
             while len(self.frames) < 4:
-                self.frames.append(obs)
-            self.frames.append(obs)
+                self.frames.append(observation)
+            self.frames.append(observation)
             obs_stack = np.stack(self.frames, axis=0)
             self.last_action = self.predict(obs_stack)
         self.frame_skipping += 1
@@ -102,7 +102,7 @@ class Agent(object):
         return self.last_action
 
     def predict(self, obs):
-        if np.random.random() < 0.01:
+        if np.random.random() < 0.00:
             action = torch.tensor(np.random.randint(7))
         else:
             with torch.no_grad():
